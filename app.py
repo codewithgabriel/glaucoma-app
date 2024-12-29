@@ -55,4 +55,4 @@ def predict():
     # Return the prediction
     return jsonify(result)
 if __name__ == '__main__':
-    app.run(debug=False)
+    app.run(debug=False, port=9919)
