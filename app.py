@@ -9,7 +9,7 @@ app = Flask(__name__)
 
 # Load your pre-trained model
 model_path = os.path.join('static/model' , 'custom-glaucoma-model.h5')
-model = load_model(model_path)
+model = "" #load_model(model_path)
 
 @app.route('/')
 def index():
