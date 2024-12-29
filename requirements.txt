@@ -1,4 +1,3 @@
-Flask
 flask
 tensorflow  # This includes Keras, so no need for a separate keras package
 numpy

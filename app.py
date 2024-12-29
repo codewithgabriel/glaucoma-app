@@ -55,7 +55,4 @@ def predict():
     # Return the prediction
     return jsonify(result)
 if __name__ == '__main__':
-    # Create temp directory if it doesn't exist
-    if not os.path.exists('temp'):
-        os.makedirs('temp')
     app.run(debug=True)
