@@ -1,31 +1,59 @@
-import streamlit as st
+from flask import Flask, request, jsonify , render_template
+from tensorflow.keras.models import load_model
+from tensorflow.keras.preprocessing import image
+import numpy as np
+import os
+from PIL import Image
 
-if not hasattr(st, 'already_started_server'):
-    # Hack the fact that Python modules (like st) only load once to
-    # keep track of whether this file already ran.
-    st.already_started_server = True
+app = Flask(__name__)
 
-    st.write('''
-        The first time this script executes it will run forever because it's
-        running a Flask server.
+# Load your pre-trained model
+model_path = os.path.join('static/model' , 'custom-glaucoma-model.h5')
+model = load_model(model_path)
 
-        Just close this browser tab and open a new one to see your Streamlit
-        app.
-    ''')
+@app.route('/')
+def index():
+    return render_template('index.html')
 
-    from flask import Flask
+@app.route('/predict', methods=['POST'])
+def predict():
+    # Check if an image was uploaded
+    if 'image' not in request.files:
+        return jsonify({'error': 'No image uploaded'}), 400
 
-    app = Flask(__name__)
+    img = request.files['image']
 
-    @app.route('/foo')
-    def serve_foo():
-        return 'This page is served via Flask!'
+    # Save the image temporarily
+    img_path = os.path.join('static/temp', img.filename)
+    img.save(img_path)
 
-    app.run(port=8888)
+    # Preprocess the image
+    img = Image.open(img_path).resize((32, 32))  # Adjust size according to your model
+    img_array = image.img_to_array(img)
+    img_array = np.expand_dims(img_array, axis=0)  # Add batch dimension
+
+    # Normalize the image
+    img_array = img_array / 255.0
+
+    # Predict using the model
+    prediction = model.predict(img_array)
+    # print(prediction)
+    predicted_class = np.argmax(prediction, axis=1)
+
+    # Clean up the temporary image
+    os.remove(img_path)
+    print(prediction)
+    
+    prediction = prediction[0]
 
 
-# We'll never reach this part of the code the first time this file executes!
-
-# Your normal Streamlit app goes here:
-x = st.slider('Pick a number')
-st.write('You picked:', x)
+        
+    result = {
+        'nrg' : str(prediction[0]),
+        'rg': str(prediction[1]),
+    }
+    print(result)
+    # Return the prediction
+    return jsonify(result)
+if __name__ == '__main__':
+    app.run(debug=False, host="0.0.0.0")
