@@ -8,7 +8,8 @@ from PIL import Image
 app = Flask(__name__)
 
 # Load your pre-trained model
-model = load_model('./model/custom-glaucoma-model.h5')
+model_path = os.path.join('static/model' , 'custom-glaucoma-model.h5')
+model = load_model(model_path)
 
 @app.route('/')
 def index():
@@ -23,7 +24,7 @@ def predict():
     img = request.files['image']
 
     # Save the image temporarily
-    img_path = os.path.join('temp', img.filename)
+    img_path = os.path.join('static/temp', img.filename)
     img.save(img_path)
 
     # Preprocess the image
