@@ -8,7 +8,7 @@ from PIL import Image
 app = Flask(__name__)
 
 # Load your pre-trained model
-model = load_model('model/custom-glaucoma-model.h5')
+model = load_model('./model/custom-glaucoma-model.h5')
 
 @app.route('/')
 def index():
